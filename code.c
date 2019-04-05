@@ -1,3 +1,45 @@
+
+void makedata(int array[], int length) 
+{ 
+	
+	int i1; 
+	for (i1=0; i1<length; i1++) 
+		array[i1] = rand(); 
+	return; 
+} 
+
+
+
+
+
+
+void check_sort(int array[], int length) 
+{ 
+	if (length==1) 
+	{ 
+		printf("Sorting Done \n"); 
+		return; 
+	} 
+else{
+
+	int j; 
+	for (j=1; j<length; j++) 
+	{ 
+		if (array[j]<array[j-1]) 
+		{ 
+			printf("checking of sorting return false\n"); 
+			return; 
+		} 
+	} 
+	printf("Sorting of array is done \n"); 
+}
+	return; 
+} 
+
+
+
+
+
 int main() 
 { 
 	int shmid; 
