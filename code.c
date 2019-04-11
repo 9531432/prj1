@@ -5,149 +5,72 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <unistd.h> 
+ #include <time.h>
 
-
-void insertion_sort(int array[], int n); 
+void insertionsort(int arr[], int n); 
 void merge(int a[], int l1, int h1, int h2); 
 
-void merge_sort(int a[], int l1, int l2) 
+void mergesort(int array[], int l, int h) 
 { 
-    int i, length=(l2-l1+1); 
-  
-    
-    if (length<=5) 
-    { 
-        insertion_sort(a+l1, length); 
-        return; 
-    } 
-  
-    pid_t left_parent_id,right_parent_id; 
-    left_parent_id = fork(); 
-    if (left_parent_id<0) 
-    { 
-        
-        perror("Left Child:error in create\n"); 
-        _exit(-1); 
-    } 
-    else if (left_parent_id==0) 
-    { 
-        merge_sort(a,l1,l1+length/2-1); 
-        _exit(0); 
-    } 
-    else
-    { 
-        right_parent_id = fork(); 
-        if (right_parent_id<0) 
-        { 
-             
-            perror("Right Child:error in create\n"); 
-            _exit(-1); 
-        } 
-        else if(right_parent_id==0) 
-        { 
-            merge_sort(a,l1+length/2,l2); 
-            _exit(0); 
-        } 
-    } 
-  
-    int status; 
-  
-    
-    waitpid(left_parent_id, &status, 0); 
-    waitpid(right_parent_id, &status, 0); 
-  
-    
-    merge(a, l1, l1+length/2-1, l2); 
-}
+	int i, leng=(h-l+1); 
 
-
-
-void merge(int ar[], int l1, int h1, int h2) 
-{ 
-	int c=h2-l1+1; 
-	int sort[c]; 
-	int i=l1, k=h1+1, m=0; 
-	while (i<=h1 && k<=h2) 
-	{ 
-		if (ar[i]<ar[k]) 
-			sort[m++]=a[i++]; 
-		else if (ar[k]<ar[i]) 
-			sort[m++]=ar[k++]; 
-		else if (ar[i]==ar[k]) 
-		{ 
-			sort[m++]=ar[i++]; 
-			sort[m++]=ar[k++]; 
-		} 
-	} 
-
-	while (i<=h1) 
-		sort[m++]=ar[i++]; 
-
-	while (k<=h2) 
-		sort[m++]=ar[k++]; 
-
-	int ar_count = l1; 
-	for (i=0; i<c; i++,l1++) 
-		ar[l1] = sort[i]; 
-}
-
-
-
-
-
-
-
-void makedata(int array[], int length) 
-{ 
 	
-	int i1; 
-	for (i1=0; i1<length; i1++) 
-		array[i1] = rand(); 
-	return; 
-} 
-
-
-
-
-
-
-void check_sort(int array[], int length) 
-{ 
-	if (length==1) 
+	if (leng<=5) 
 	{ 
-		printf("Sorting Done \n"); 
+		insertionsort(array+l, leng); 
 		return; 
 	} 
-else{
 
-	int j; 
-	for (j=1; j<length; j++) 
+	pid_t left_pid,right_pid; 
+	left_pid = fork(); 
+	if (left_pid<0) 
 	{ 
-		if (array[j]<array[j-1]) 
+		
+		perror("error in create left child\n"); 
+		_exit(-1); 
+	} 
+	else if (left_pid==0) 
+	{ 
+		mergesort(array,l,l+leng/2-1); 
+		_exit(0); 
+	} 
+	else
+	{ 
+		right_pid = fork(); 
+		if (right_pid<0) 
 		{ 
-			printf("checking of sorting return false\n"); 
-			return; 
+			
+			perror("error in create right child\n"); 
+			_exit(-1); 
+		} 
+		else if(right_pid==0) 
+		{ 
+			mergesort(array,l+leng/2,h); 
+			_exit(0); 
 		} 
 	} 
-	printf("Sorting of array is done \n"); 
-}
-	return; 
+
+	int status; 
+
+	 
+	waitpid(left_pid, &status, 0); 
+	waitpid(right_pid, &status, 0); 
+
+	 
+	merge(array, l, l+leng/2-1, h); 
 } 
 
 
-
-
-
-void insertion_sort(int array[], int n) 
+void insertionsort(int array[], int n) 
 { 
-int i,j,k; 
+int i, k, j; 
 for (i = 1; i < n; i++) 
 { 
 	k = array[i]; 
-	j = i-1; 
+	j = i-1;
 
 	
-	while (j >= 0 && arr[j] > k) 
+	while (j >= 0 && array[j] > k) 
 	{ 
 		array[j+1] = array[j]; 
 		j = j-1; 
@@ -157,56 +80,137 @@ for (i = 1; i < n; i++)
 } 
 
 
+void merge(int arr[], int l1, int h1, int h2) 
+{ 
+
+	int c=h2-l1+1; 
+	int sort[c]; 
+	int i=l1, k=h1+1, m=0; 
+	while (i<=h1 && k<=h2) 
+	{ 
+		if (arr[i]<arr[k]) 
+			sort[m++]=arr[i++]; 
+		else if (arr[k]<arr[i]) 
+			sort[m++]=arr[k++]; 
+		else if (arr[i]==arr[k]) 
+		{ 
+			sort[m++]=arr[i++]; 
+			sort[m++]=arr[k++]; 
+		} 
+	} 
+
+	while (i<=h1) 
+		sort[m++]=arr[i++]; 
+
+	while (k<=h2) 
+		sort[m++]=arr[k++]; 
+
+	int arr_c= l1; 
+	for (i=0; i<c; i++,l1++) 
+		arr[l1] = sort[i]; 
+} 
+
+
+void checksort(int arr[], int length) 
+{ 
+	if (length==1) 
+	{ 
+		printf("Sorting Done \n"); 
+		return; 
+	} 
+
+	int i; 
+	for (i=1; i<length; i++) 
+	{ 
+		if (arr[i]<arr[i-1]) 
+		{ 
+			printf("Sorting Not Done\n"); 
+			return; 
+		} 
+	} 
+	printf("Sorting Done\n"); 
+	return; 
+} 
+
+ 
 
 
 
+void makedata(int array[], int length) 
+{ 
+	 
+	int i; 
+	for (i=0; i<length; i++) 
+		array[i] = rand(); 
+	return; 
+} 
+
+
+
+
+
+ 
 int main() 
 { 
-	int shmid; 
+ clock_t start, end;
+     double cpu_time_used;
+     
+     start = clock();
+	int sh_m_id; 
 	key_t key = IPC_PRIVATE; 
-	int *sharedmemo_array; 
+	int *shared_memo_array; 
 
 
+	 
 	int length = 10000; 
 
 	
-	size_t segmentation_size = sizeof(int)*length; 
+	size_t shared_length = sizeof(int)*length; 
 
-	if ((shmid = shmget(key, segmentation_size, IPC_CREAT | 0666)) < 0) 
+	
+	if ((sh_m_id = shmget(key, shared_length, IPC_CREAT | 0666)) < 0) 
 	{ 
 		perror("shmget"); 
 		_exit(1); 
 	} 
 
 	
-	if ((sharedmemo_array = shmat(shmid, NULL, 0)) == (int *) -1) 
+	if ((shared_memo_array = shmat(sh_m_id, NULL, 0)) == (int *) -1) 
 	{ 
 		perror("shmat"); 
 		_exit(1); 
 	} 
 
-	
-	srand(time(NULL)); 
-	makedata(sharedmemo_array, length); 
- 
-	merge_sort(sharedmemo_array, 0, length-1); 
-
 	 
-	check_sort(sharedmemo_array, length); 
-
+	srand(time(NULL)); 
+	makedata(shared_memo_array, length); 
+  
 	
-	if (shmdt(sharedmemo_array) == -1) 
+	mergesort(shared_memo_array, 0, length-1); 
+
+	checksort(shared_memo_array, length); 
+
+
+	if (shmdt(shared_memo_array) == -1) 
 	{ 
 		perror("shmdt"); 
 		_exit(1); 
 	} 
 
-	
-	if (shmctl(shmid, IPC_RMID, NULL) == -1) 
+	if (shmctl(sh_m_id, IPC_RMID, NULL) == -1) 
 	{ 
 		perror("shmctl"); 
 		_exit(1); 
 	} 
+  end = clock();
+     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
+     printf("cpu_time:\n");
+     
+        printf("%lf",cpu_time_used );
+printf("\n");  
+
 
 	return 0; 
-}
+} 
+
